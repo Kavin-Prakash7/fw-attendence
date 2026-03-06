@@ -1,0 +1,100 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper Functions ────────────────────────────────────────────────────────
+
+    /** Returns true if the request is from a signed-in user */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /** Returns true if the caller is the owner of this uid */
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+
+    /** Returns true if the caller has ADMIN role in their profile document */
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'ADMIN';
+    }
+
+    /** Returns true if the caller has STAFF role */
+    function isStaff() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'STAFF';
+    }
+
+    /** Returns the empId linked to the caller's profile */
+    function myEmpId() {
+      return get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.empId;
+    }
+
+    // ── User Profiles ───────────────────────────────────────────────────────────
+    // • Admins can read/write all profiles
+    // • Staff can only read their own profile (not write role field)
+
+    match /userProfiles/{uid} {
+      allow read:   if isSignedIn() && (isOwner(uid) || isAdmin());
+      allow create: if isSignedIn() && isOwner(uid);
+      // Only admins can change roles; users can update their own non-role fields
+      allow update: if isAdmin() ||
+                       (isOwner(uid) &&
+                        !('role' in request.resource.data.diff(resource.data).affectedKeys()));
+      allow delete: if isAdmin();
+    }
+
+    // ── Employees Collection ────────────────────────────────────────────────────
+    // • Admins: full CRUD
+    // • Staff: read-only (they need to look up their own record)
+
+    match /employees/{empId} {
+      allow read:   if isSignedIn();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── Attendance Collection ───────────────────────────────────────────────────
+    // Supports two record structures:
+    //   OLD (admin system): { empId, date, checkIn (string), checkOut (string) }
+    //   NEW (staff system): { employeeId (= Auth UID), date, checkIn (Timestamp), checkOut (Timestamp), totalHours }
+    //
+    // Document ID format (new): "{uid}_{date}"
+
+    match /attendance/{docId} {
+      // Admin: full access to all records
+      allow read, write: if isAdmin();
+
+      // Staff: read their own records — either new (employeeId) or old (empId) structure
+      allow read: if isStaff() && (
+                     resource.data.employeeId == request.auth.uid ||
+                     resource.data.empId == myEmpId()
+                  );
+
+      // Staff: create their own check-in record (new structure)
+      // employeeId must equal the caller's own UID
+      allow create: if isStaff() &&
+                       request.resource.data.employeeId == request.auth.uid &&
+                       request.resource.data.keys().hasAll(['employeeId', 'date', 'checkIn']);
+
+      // Staff: update their own record (e.g. add checkOut / totalHours)
+      // employeeId and date are immutable
+      allow update: if isStaff() &&
+                       resource.data.employeeId == request.auth.uid &&
+                       request.resource.data.employeeId == request.auth.uid &&
+                       request.resource.data.date == resource.data.date;
+
+      // Staff cannot delete attendance records
+      allow delete: if isAdmin();
+    }
+
+    // ── Default: deny everything else ───────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <!-- ── Favicon & Touch Icons ── -->
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/favicon.png" />
+
+  <!-- ── Viewport & Mobile ── -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="FW Attendance" />
+
+  <!-- ── Theme ── -->
+  <meta name="theme-color" content="#ff7a18" />
+  <meta name="msapplication-TileColor" content="#ff7a18" />
+  <meta name="msapplication-TileImage" content="/favicon.png" />
+
+  <!-- ── SEO ── -->
+  <meta name="description"
+    content="FotoWorld Attendance — Professional attendance tracking for photography studios and creative agencies." />
+  <meta name="keywords" content="attendance, fotoworld, studio, photography, HR" />
+
+  <!-- ── Open Graph ── -->
+  <meta property="og:title" content="FotoWorld Attendance" />
+  <meta property="og:description" content="Smart attendance tracking for FotoWorld Studio." />
+  <meta property="og:image" content="/favicon.png" />
+  <meta property="og:type" content="website" />
+
+  <title>FotoWorld Attendance</title>
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- ── Splash screen background (iOS) ── -->
+  <style>
+    /* Prevent flash of unstyled content */
+    html {
+      background: #ffffff;
+    }
+
+    #root:empty::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: #ffffff url('/favicon.png') center/120px no-repeat;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>
