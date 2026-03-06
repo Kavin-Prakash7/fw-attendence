@@ -1,34 +1,26 @@
 {
-  "name": "fotoworld-attendance",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "client": "vite",
-    "server": "node server.js",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "lint": "eslint .",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
   },
+  "engines": {
+    "node": "24"
+  },
+  "main": "index.js",
   "dependencies": {
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "firebase": "^12.10.0",
-    "firebase-admin": "^13.7.0",
-    "framer-motion": "^12.35.0",
-    "lucide-react": "^0.577.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "recharts": "^3.7.0",
-    "vite-plugin-pwa": "^1.2.0"
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
   },
   "devDependencies": {
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.5.2",
-    "concurrently": "^9.2.1",
-    "typescript": "~5.9.3",
-    "vite": "^7.3.1"
-  }
+    "eslint": "^8.15.0",
+    "eslint-config-google": "^0.14.0",
+    "firebase-functions-test": "^3.4.1"
+  },
+  "private": true
 }
