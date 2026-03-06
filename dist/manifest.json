@@ -1,0 +1,16 @@
+{
+    "name": "FotoWorld Attendance",
+    "short_name": "FotoWorld",
+    "description": "Professional attendance tracking for photography studios",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#080a0f",
+    "theme_color": "#e8b84b",
+    "icons": [
+        {
+            "src": "/camera.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}
